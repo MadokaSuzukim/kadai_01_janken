@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>価値観合う合わない！？ゲーム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div align="center">
+        <h2>価値観合う合わない！？ゲーム</h2>
+        「スタート」を押した後に、<br>今の心の調子を「😁」「😀」「😂」３つのスタンプから選んでね。<br>
+        <br>相手の感情は読めません。あなたの今の状態を教えてください。<br>
+        <br>
+        <button id="startButton" onclick="start();">スタート</button>
+        <button id="smailButton" onclick="janken('😁');" disabled>😁</button>
+        <button id="nomalButton" onclick="janken('😀');" disabled>😀</button>
+        <button id="butButton" onclick="janken('😂');" disabled>😂</button>
+        <br>
+        <table border="1" style="border-collapse: collapse">
+            <tr>
+                <td align="center"><h2>貴方の感情 <div id="PlayerHand"> </div></h2></td>
+                <td align="center"><h2>相手の感情 <div id="RivalHand"> </div></h2></td>
+            </tr>
+            <br>何を選んでも、正解不正解はありません
+        </table>
+        <br>
+        <div id="Result"></div>
+    </div>
+
+    <!-- モーダルのHTML -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <p id="modalText"></p>
+            <button id="retryButton">再トライ</button>
+            <a href="https://marumark-98145.bubbleapps.io/signin" target="_blank" class="marumark-button">Marumark</a>
+    </div>
+        </div>
+    </div>
+
+    <script>
+        const FPS = 30;
+        const HANDS = ['😁', '😀', '😂'];
+        let lastRivalHandIndex = 0;
+        let gameLoopInterbalId = null;
+
+        function gameLoop() {
+            const handIndex = (lastRivalHandIndex + 1) % HANDS.length;
+            lastRivalHandIndex = handIndex;
+            document.getElementById("RivalHand").innerHTML = HANDS[handIndex];
+        }
+
+        function start() {
+            document.getElementById("startButton").disabled = true;
+            document.getElementById("smailButton").disabled = false;
+            document.getElementById("nomalButton").disabled = false;
+            document.getElementById("butButton").disabled = false;
+            document.getElementById("PlayerHand").innerHTML = ' ';
+            document.getElementById("Result").innerHTML = '';
+            gameLoopInterbalId = setInterval(gameLoop, 1000 / FPS);
+        }
+
+        function showModal(result) {
+            var modal = document.getElementById('resultModal');
+            var modalText = document.getElementById('modalText');
+            modalText.innerHTML = result;
+            modal.style.display = 'block';
+
+            var closeButton = document.getElementsByClassName('close-button')[0];
+            closeButton.onclick = function() {
+                modal.style.display = 'none';
+            }
+
+
+            // 再トライボタンのクリックイベント
+         retryButton.onclick = function() {
+         modal.style.display = 'none'; // モーダルを閉じる
+         start(); // ゲームを再スタート
+    }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        }
+
+        function janken(playerHand) {
+            clearInterval(gameLoopInterbalId);
+
+            document.getElementById("PlayerHand").innerHTML = playerHand;
+
+            const rivalHand = HANDS[lastRivalHandIndex];
+            let result = "";
+
+            // 結果の判定ロジック
+            if (playerHand === rivalHand) {
+                result = "価値観合いますね！でも、今日だけかもしれません。あなたにとって、そして相手にとっての価値観を認識していけたら良いですね！";
+            } else if (playerHand === '😁' && rivalHand === '😀') {
+                result = "何かしら、不一致がある部分があるのかもしれません、対話で擦り合わせてみませんか？";
+            } else if (playerHand === '😂' && rivalHand === '😁') {
+                result = "あなたの感情を開示できる状態じゃないのかもしれない。しんどさがあったら誰かに打ち明けるのも一つです。";
+            } else if (playerHand === '😂' && rivalHand === '😀') {
+                result = "価値観に誤解はつきものです。いつでも完全に理解はできないということを頭に入れて、自分自身の想いを共有してみましょう。";
+            } else if (playerHand === '😁' && rivalHand === '😂' || playerHand === '😀' && rivalHand === '😂') {
+                result = "自分にとって良い状況は、もしかしたら相手にとっては不快なのかもしれないと考えてみても良いですね。";
+            } else if (playerHand === '😀' && rivalHand === '😁' ) {
+                result = "自分にとっての状況は、もしかしたら相手にはよい印象を与えているかもしれないと考えてみても良いですね。";
+            }else {
+                result = "皆違って当たり前ですよね！良かったらもう一度試してみましょう。";
+            }
+
+            showModal(result); // 結果をモーダルで表示
+
+            // ボタンの状態をリセット
+            document.getElementById("startButton").disabled = false;
+            document.getElementById("smailButton").disabled = true;
+            document.getElementById("nomalButton").disabled = true;
+            document.getElementById("butButton").disabled = true;
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
